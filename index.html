@@ -104,6 +104,11 @@ function importMemoryCard(inputElement) {
     </div>
 
     <script>
+        // Force the engine to reveal itself
+if (typeof Module !== 'undefined' && !window.load) {
+    window.load = Module.load || Module['canvas_load'] || Module['cwrap']('load', null, ['string']);
+    console.log("Engine manual override attempted.");
+}
         function runGame(index) {
     const input = document.getElementById('gameInput');
     if (!input.files || !input.files[index]) {
@@ -173,4 +178,5 @@ function importMemoryCard(inputElement) {
     </script>
 </body>
 </html>
+
 
