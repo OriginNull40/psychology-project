@@ -351,5 +351,23 @@
 					}
 				});
 		</script>
+		<div id="master-controls" style="position: fixed; bottom: 0; left: 0; width: 100%; background: #1a1a1a; color: white; padding: 15px; border-top: 2px solid #444; text-align: center; font-family: sans-serif; z-index: 10000;">
+    <div style="margin-bottom:10px;">
+        <label style="font-weight:bold;">1. Load Game Discs (Select up to 3):</label><br>
+        <input type="file" id="multiDiscInput" accept=".bin,.iso,.img,.cue" multiple style="margin: 10px 0;">
+        <br>
+        <button onclick="bootSelectedDisc(0)">Boot Disc 1</button>
+        <button onclick="bootSelectedDisc(1)">Boot Disc 2</button>
+        <button onclick="bootSelectedDisc(2)">Boot Disc 3</button>
+    </div>
+    <hr style="border:0; border-top:1px solid #333;">
+    <div style="margin-top:10px;">
+        <label style="font-weight:bold;">2. Memory Card Management:</label><br>
+        <button onclick="exportMemoryCard()" style="background:#2e7d32; color:white; border:none; padding:8px 12px; cursor:pointer;">⬇️ Download Save</button>
+        <button onclick="document.getElementById('importFile').click()" style="background:#1565c0; color:white; border:none; padding:8px 12px; cursor:pointer; margin-left:10px;">⬆️ Upload Save</button>
+        <input type="file" id="importFile" style="display:none" onchange="importMemoryCard(this)">
+    </div>
+</div>
 	</body>
 </html>
+
