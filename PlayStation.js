@@ -48,3 +48,67 @@ function importMemoryCard(input) {
     reader.readAsArrayBuffer(file);
 }
 /* --- CUSTOM SAVE/LOAD LOGIC END --- */
+/* --- CONSOLIDATED 2026 LOGIC START --- */
+
+// Logic to Boot Selected Discs
+function bootSelectedDisc(index) {
+    const input = document.getElementById('multiDiscInput');
+    const files = Array.from(input.files);
+    
+    if (files[index]) {
+        // window.load is the original function in Russo's script
+        // This triggers the emulator to start the file
+        window.load(files[index]);
+    } else {
+        alert("Disc " + (index + 1) + " not selected! Hold Ctrl to select multiple files.");
+    }
+}
+
+// Logic to Export Memory Card
+function exportMemoryCard() {
+    const request = indexedDB.open("wasmemu_db");
+    request.onsuccess = (e) => {
+        const db = e.target.result;
+        try {
+            const transaction = db.transaction("files", "readonly");
+            const store = transaction.objectStore("files");
+            const getReq = store.get("/home/web_user/.pcsx/memcards/card1.mcd");
+
+            getReq.onsuccess = () => {
+                if (!getReq.result) {
+                    alert("No save found! Save in-game first.");
+                    return;
+                }
+                const blob = new Blob([getReq.result.contents], {type: "application/octet-stream"});
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement("a");
+                a.href = url;
+                a.download = "PS1_MemoryCard.mcd";
+                a.click();
+            };
+        } catch (err) {
+            alert("Database error. Is the game running?");
+        }
+    };
+}
+
+// Logic to Import Memory Card
+function importMemoryCard(input) {
+    const file = input.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (e) => {
+        const request = indexedDB.open("wasmemu_db");
+        request.onsuccess = (event) => {
+            const db = event.target.result;
+            const transaction = db.transaction("files", "readwrite");
+            transaction.objectStore("files").put({
+                contents: new Uint8Array(e.target.result),
+                timestamp: new Date()
+            }, "/home/web_user/.pcsx/memcards/card1.mcd");
+            alert("Save Imported! Refresh the page to load it.");
+        };
+    };
+    reader.readAsArrayBuffer(file);
+}
+/* --- CONSOLIDATED 2026 LOGIC END --- */
