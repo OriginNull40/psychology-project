@@ -36,18 +36,23 @@
     <button onclick="document.getElementById('importFile').click()" style="padding:10px; background:#1565c0; color:white; border:none; border-radius:4px; cursor:pointer; margin-left:10px;">⬆️ Upload Save (Import)</button>
     <input type="file" id="importFile" style="display:none" onchange="importMemoryCard(this)">
 </div>
-		<div></div>
-		<div class="wrapper">
-			<div class="gui_fullscreen"></div>
-			<div class="gui_sound_on" id="gui_sound_handler"></div>
-			<div class="gui_container">
-				<div class="gui_background"></div>
-				<div class="gui_controls"><span class="gui_controls_key">SELECT = </span>C&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">START = </span>V<br><span class="gui_controls_key">L1 = </span>W&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">L2 = </span>E&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">R1 = </span>R&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">R2 = </span>T<br><span class="gui_controls_key">TRIANGLE = </span>D&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">CIRCLE = </span>X&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">CROSS = </span>Z&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="gui_controls_key">SQUARE = </span>S</div>
-				<div class="gui_email"><a href="mailto:info@lrusso.com">info@lrusso.com</a></div>
-				<div class="gui_upload"></div>
-				<input type="file" id="gui_controls_file" class="gui_controls_file" onchange="readFile(event.target.files);">
-			</div>
-		</div>
+		<div id="master-controls" style="background:#1a1a1a; color:white; padding:15px; border:1px solid #444; text-align:center; font-family:sans-serif;">
+    <div style="margin-bottom:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:bold;">1. Load Game Discs (Select up to 3):</label>
+        <input type="file" id="multiDiscInput" accept=".bin,.iso,.img,.cue" multiple style="background:#333; color:white; padding:5px;">
+        <br>
+        <button onclick="bootSelectedDisc(0)" style="margin-top:5px;">Boot Disc 1</button>
+        <button onclick="bootSelectedDisc(1)">Boot Disc 2</button>
+        <button onclick="bootSelectedDisc(2)">Boot Disc 3</button>
+    </div>
+    <hr style="border:0; border-top:1px solid #333;">
+    <div style="margin-top:15px;">
+        <label style="display:block; margin-bottom:5px; font-weight:bold;">2. Memory Card Management:</label>
+        <button onclick="exportMemoryCard()" style="padding:8px; background:#2e7d32; color:white; border:none; border-radius:4px; cursor:pointer;">⬇️ Download Save</button>
+        <button onclick="document.getElementById('importFile').click()" style="padding:8px; background:#1565c0; color:white; border:none; border-radius:4px; cursor:pointer; margin-left:10px;">⬆️ Upload Save</button>
+        <input type="file" id="importFile" style="display:none" onchange="importMemoryCard(this)">
+    </div>
+</div>
 		<script>
 			function getBooleanSetting(settingName){try{var name = "playStation" + settingName;var nameEQ = name + "=";var ca = document.cookie.split(";");for(var i=0;i < ca.length;i++){var c = ca[i];while (c.charAt(0)==" "){c = c.substring(1,c.length);}if (c.indexOf(nameEQ) == 0){if (c.substring(nameEQ.length,c.length)=="true"){return true;}else{return false;}}}}catch(err){}return true;}
 			function setBooleanSetting(settingName,settingValue){try{var name = "playStation" + settingName;var value = String(settingValue);var days = 999;var expires = "";if (days){var date = new Date();date.setTime(date.getTime() + (days*24*60*60*1000));expires = "; expires=" + date.toUTCString() + "; SameSite=Lax";}document.cookie = name + "=" + (value || "")  + expires + "; Secure; path=/";}catch(err){}}
@@ -358,4 +363,5 @@
 		</script>
 	</body>
 </html>
+
 
