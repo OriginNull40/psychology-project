@@ -56,23 +56,25 @@
     <script src="PlayStation.js"></script>
 
     <script>
-        // Integrating with lrusso's "Module"
+        // ALERT 1: Tells us the HTML is working and trying to load the script
+        alert("HTML is running. Looking for PlayStation.js...");
+
         var Module = {
             canvas: document.getElementById('canvas'),
             onRuntimeInitialized: function() {
+                // ALERT 2: Tells us the PlayStation.js file was successfully loaded and executed
+                alert("ENGINE SUCCESS! The emulator is now ready.");
                 document.getElementById('status').innerText = "Engine Ready. Click Select .BIN to begin.";
             }
         };
 
         function bootGame(input) {
             if (input.files && input.files[0]) {
-                // Calls the original load function in PlayStation.js
                 window.load(input.files[0]);
                 document.getElementById('status').innerText = "Now Playing: " + input.files[0].name;
             }
         }
 
-        // --- MANUAL SAVE EXPORT ---
         async function exportSave() {
             const req = indexedDB.open("wasmemu_db");
             req.onsuccess = () => {
@@ -89,7 +91,6 @@
             };
         }
 
-        // --- MANUAL SAVE IMPORT ---
         function importSave(input) {
             const reader = new FileReader();
             reader.onload = (e) => {
@@ -108,7 +109,3 @@
     </script>
 </body>
 </html>
-
-
-
-
