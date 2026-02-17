@@ -9,7 +9,7 @@
         .menu-bar { background: #1a1a1a; padding: 20px; border-top: 2px solid #333; margin-top: 10px; }
         .btn { background: #007bff; color: white; border: none; padding: 12px 24px; margin: 5px; cursor: pointer; border-radius: 4px; font-weight: bold; }
         .btn-save { background: #28a745; }
-        #status { color: #00ff00; margin-bottom: 10px; font-size: 14px; font-weight: bold; }
+        #status { color: #888; margin-bottom: 10px; font-size: 14px; }
         input[type="file"] { display: none; }
     </style>
 </head>
@@ -25,29 +25,19 @@
 
         <hr style="border: 0; border-top: 1px solid #333; margin: 15px 0;">
 
-        <button class="btn btn-save" onclick="exportSave()">DOWNLOAD SAVE</button>
-        <button class="btn" style="background:#555" onclick="document.getElementById('save-input').click()">UPLOAD SAVE</button>
+        <button class="btn btn-save" onclick="exportSave()">DOWNLOAD SAVE (.MCD)</button>
+        <button class="btn" style="background:#555" onclick="document.getElementById('save-input').click()">UPLOAD SAVE (.MCD)</button>
         <input type="file" id="save-input" onchange="importSave(this)">
     </div>
 
+    <script src="PlayStation.js"></script>
+
     <script>
-        function injectEngine() {
-            var script = document.createElement('script');
-            // Using external source to bypass GitHub timeout errors
-            script.src = "https://lrusso.github.io/VirtualPlayStation/PlayStation.js";
-            document.head.appendChild(script);
-        }
-
-        window.onload = function() {
-            alert("Page loaded. Attempting to start engine in 3 seconds...");
-            setTimeout(injectEngine, 3000);
-        };
-
         var Module = {
             canvas: document.getElementById('canvas'),
             onRuntimeInitialized: function() {
-                alert("ENGINE SUCCESS!");
-                document.getElementById('status').innerText = "Ready. Select your .BIN file.";
+                document.getElementById('status').innerText = "Engine Ready. Select your .BIN.";
+                document.getElementById('status').style.color = "#00ff00";
             }
         };
 
@@ -58,19 +48,26 @@
             }
         }
 
+        // The "Bridge" to the internal save file
         async function exportSave() {
-            const req = indexedDB.open("wasmemu_db");
-            req.onsuccess = () => {
-                const store = req.result.transaction("files").objectStore("files");
-                const getReq = store.get("/home/web_user/.pcsx/memcards/card1.mcd");
-                getReq.onsuccess = () => {
-                    if (!getReq.result) return alert("No save data found yet.");
-                    const a = document.createElement("a");
-                    a.href = URL.createObjectURL(new Blob([getReq.result.contents]));
-                    a.download = "psx_save.mcd";
-                    a.click();
+            try {
+                const req = indexedDB.open("wasmemu_db");
+                req.onsuccess = () => {
+                    const db = req.result;
+                    const transaction = db.transaction("files", "readonly");
+                    const store = transaction.objectStore("files");
+                    const getReq = store.get("/home/web_user/.pcsx/memcards/card1.mcd");
+                    
+                    getReq.onsuccess = () => {
+                        if (!getReq.result) return alert("No save found! Did you save in-game yet?");
+                        const blob = new Blob([getReq.result.contents]);
+                        const a = document.createElement("a");
+                        a.href = URL.createObjectURL(blob);
+                        a.download = "psx_save.mcd";
+                        a.click();
+                    };
                 };
-            };
+            } catch (e) { alert("Error exporting: " + e); }
         }
 
         function importSave(input) {
@@ -78,11 +75,13 @@
             reader.onload = (e) => {
                 const req = indexedDB.open("wasmemu_db");
                 req.onsuccess = () => {
-                    req.result.transaction("files", "readwrite").objectStore("files").put({
+                    const db = req.result;
+                    const transaction = db.transaction("files", "readwrite");
+                    transaction.objectStore("files").put({
                         contents: new Uint8Array(e.target.result),
                         timestamp: new Date()
                     }, "/home/web_user/.pcsx/memcards/card1.mcd");
-                    alert("Save imported!");
+                    alert("Save imported! Now select your .BIN game.");
                 };
             };
             reader.readAsArrayBuffer(input.files[0]);
